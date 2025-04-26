@@ -326,8 +326,12 @@ const MiniGame = () => {
         throw new Error('Failed to fetch leaderboard');
       }
       const data = await response.json();
-      console.log('Leaderboard data:', data); // 디버깅용 로그
-      setLeaderboardScores(data);
+      // highScore를 score로 변환
+      const mapped = data.map(item => ({
+        ...item,
+        score: item.highScore
+      }));
+      setLeaderboardScores(mapped);
     } catch (error) {
       console.error('Leaderboard load error:', error);
     }
