@@ -2,16 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 
 const LeaderboardContainer = styled.div`
-  position: fixed;
-  top: 20px;
-  right: 20px;
   background-color: rgba(0, 0, 0, 0.8);
   border: 2px solid #4eff4e;
   border-radius: 8px;
   padding: 15px;
   color: #4eff4e;
-  width: 250px;
-  max-height: 300px;
+  width: 91%;
+  margin-top: 20px;
+  box-sizing: border-box;
   overflow-y: auto;
 `;
 
@@ -54,7 +52,7 @@ const Score = styled.span`
 const Leaderboard = ({ scores }) => {
   return (
     <LeaderboardContainer>
-      <Title>리더보드</Title>
+      <Title>Leaderboard 🏆</Title>
       <ScoreList>
         {scores.map((score, index) => (
           <ScoreItem key={index}>

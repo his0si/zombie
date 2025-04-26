@@ -123,6 +123,15 @@ const RestartButton = styled.button`
   }
 `;
 
+const GameBoxWrapper = styled.div`
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 // 게임 클래스 정의
 class GameState {
   constructor(canvas) {
@@ -604,11 +613,14 @@ const MiniGame = () => {
     >
       <ScoreDisplay>Score: {score}</ScoreDisplay>
       {!imagesLoaded && <div>Loading images...</div>}
-      <GameCanvas
-        ref={canvasRef}
-        width={800}
-        height={300}
-      />
+      <GameBoxWrapper>
+        <GameCanvas
+          ref={canvasRef}
+          width={800}
+          height={300}
+        />
+        <Leaderboard scores={leaderboardScores} />
+      </GameBoxWrapper>
       <GameOver show={gameOver}>
         <h2>Game Over!</h2>
         <p>Final Score: {score}</p>
@@ -627,7 +639,6 @@ const MiniGame = () => {
           onAuth={handleAuth}
         />
       )}
-      <Leaderboard scores={leaderboardScores} />
     </GameContainer>
   );
 };
