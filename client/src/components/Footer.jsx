@@ -15,7 +15,7 @@ export default function Footer() {
       fontSize: '14px'
     }}>
       <a 
-        href="https://github.com/his0si/zombie-test" 
+        href="https://github.com/his0si/zombie" 
         target="_blank" 
         rel="noopener noreferrer"
         style={{
