@@ -76,12 +76,12 @@ const SwitchText = styled.p`
 `;
 
 const AuthModal = ({ onClose, onAuth }) => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const [nickname, setNickname] = useState('');
   const [studentId, setStudentId] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -91,7 +91,9 @@ const AuthModal = ({ onClose, onAuth }) => {
     }
 
     try {
-      const apiUrl = `${import.meta.env.VITE_API_URL}/api/auth/login`;
+      const apiUrl = `${import.meta.env.VITE_API_URL}/api/auth`;
+      console.log('Sending request to:', apiUrl); // 디버깅용 로그
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -109,70 +111,17 @@ const AuthModal = ({ onClose, onAuth }) => {
       const data = await response.json();
       
       if (!response.ok) {
-        if (response.status === 404) {
-          alert('등록되지 않은 계정입니다.');
-          setIsLogin(false);
-          return;
-        }
-        throw new Error(data.message || '로그인 처리 중 오류가 발생했습니다.');
+        throw new Error(data.message || '인증 처리 중 오류가 발생했습니다.');
       }
 
       if (data.success) {
         onAuth(data.user);
         onClose();
       } else {
-        setError(data.message || '로그인에 실패했습니다.');
+        setError(data.message || '인증에 실패했습니다.');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError(error.message || '서버 연결에 실패했습니다.');
-    }
-  };
-
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    if (!nickname || !studentId) {
-      setError('닉네임과 학번을 모두 입력해주세요.');
-      return;
-    }
-
-    try {
-      const apiUrl = `${import.meta.env.VITE_API_URL}/api/auth/signup`;
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        credentials: 'include',
-        mode: 'cors',
-        body: JSON.stringify({
-          nickname: nickname.trim(),
-          studentId: studentId.trim()
-        })
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        if (response.status === 409) {
-          alert('이미 등록된 계정입니다.');
-          setIsLogin(true);
-          return;
-        }
-        throw new Error(data.message || '회원가입 처리 중 오류가 발생했습니다.');
-      }
-
-      if (data.success) {
-        alert('회원가입이 완료되었습니다. 로그인해주세요.');
-        setIsLogin(true);
-      } else {
-        setError(data.message || '회원가입에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('Signup error:', error);
+      console.error('Auth error:', error);
       setError(error.message || '서버 연결에 실패했습니다.');
     }
   };
@@ -184,7 +133,7 @@ const AuthModal = ({ onClose, onAuth }) => {
         {error && (
           <ErrorMessage>{error}</ErrorMessage>
         )}
-        <Form onSubmit={isLogin ? handleLogin : handleSignup}>
+        <Form onSubmit={handleSubmit}>
           <Input
             type="text"
             placeholder="닉네임"
