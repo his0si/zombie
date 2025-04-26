@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import NoonyomiImage from '../assets/Noonyomi.png';
+import ZombieImage from '../assets/zombie.png';
 
 const Container = styled.div`
   width: calc(var(--vw, 1vw) * 100);
@@ -33,6 +33,10 @@ const Title = styled.h1`
   white-space: nowrap;
   width: 100%;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
 `;
 
 const Description = styled.p`
@@ -92,15 +96,23 @@ export default function Home() {
   return (
     <Container>
       <ContentWrapper>
-        <Title>좀비고 학생 유형 테스트</Title>
+        <Title>
+          좀비고 학생 유형 테스트
+          <img
+            src={ZombieImage}
+            alt="Zombie"
+            style={{ height: '1em', marginLeft: '0', verticalAlign: 'middle', cursor: 'pointer' }}
+            onClick={() => navigate('/mini-game')}
+          />
+        </Title>
         <Description>당신은 어떤 좀비고 학생일까요?</Description>
         <StartButton onClick={() => navigate('/test')}>
           테스트 시작하기
         </StartButton>
       </ContentWrapper>
-      <ImageButton onClick={() => navigate('/mini-game')}>
-        <img src={NoonyomiImage} alt="Noonyomi" />
-      </ImageButton>
+      {/* <ImageButton onClick={() => navigate('/mini-game')}>
+        <img src={ZombieImage} alt="Zombie" />
+      </ImageButton> */}
     </Container>
   );
 }
