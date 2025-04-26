@@ -38,6 +38,14 @@ const Description = styled.p`
   line-height: 1.5;
 `;
 
+const LandscapeMessage = styled.p`
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: #4eff4ecc;
+  line-height: 1.4;
+`;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -158,6 +166,10 @@ const AuthModal = ({ onClose, onAuth }) => {
           닉네임은 리더보드에 순위를 표시하기 위해 필요하며, <br />
           학번은 순위권 경품 수령 시 본인 확인 용도로만 사용됩니다.
         </Description>
+        <LandscapeMessage>
+          세로 화면에서는 게임 화면이 제한되어 원활한 플레이가 어려울 수 있습니다.<br />
+          더 나은 몰입감을 위해 가로 모드 사용을 권장합니다.
+        </LandscapeMessage>
         {error && (
           <ErrorMessage>{error}</ErrorMessage>
         )}
