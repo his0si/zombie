@@ -26,8 +26,16 @@ const ModalContent = styled.div`
 
 const Title = styled.h2`
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-size: 24px;
+`;
+
+const Description = styled.p`
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #ffffff;
+  line-height: 1.5;
 `;
 
 const Form = styled.form`
@@ -64,19 +72,32 @@ const Button = styled.button`
   }
 `;
 
-const SwitchText = styled.p`
+const ErrorMessage = styled.div`
+  color: #ff4e4e;
+  margin-bottom: 15px;
   text-align: center;
-  margin-top: 15px;
-  cursor: pointer;
-  color: #4eff4e80;
+  font-size: 14px;
+`;
 
+const TextButton = styled.button`
+  background: none;
+  border: none;
+  color: #4eff4ecc;
+  font-size: 13px;
+  margin-top: 10px;
+  cursor: pointer;
+  padding: 0;
+  text-align: center;
+  display: block;
+  width: 100%;
+  font-weight: normal;
+  transition: text-decoration 0.2s;
   &:hover {
-    color: #4eff4e;
+    text-decoration: underline;
   }
 `;
 
 const AuthModal = ({ onClose, onAuth }) => {
-  const [isLogin, setIsLogin] = useState(false);
   const [nickname, setNickname] = useState('');
   const [studentId, setStudentId] = useState('');
   const [error, setError] = useState('');
@@ -92,7 +113,7 @@ const AuthModal = ({ onClose, onAuth }) => {
 
     try {
       const apiUrl = `${import.meta.env.VITE_API_URL}/api/auth`;
-      console.log('Sending request to:', apiUrl); // 디버깅용 로그
+      console.log('Sending request to:', apiUrl);
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -129,7 +150,14 @@ const AuthModal = ({ onClose, onAuth }) => {
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={e => e.stopPropagation()}>
-        <Title>{isLogin ? '로그인' : '회원가입'}</Title>
+        <Title>이스터에그 발견!🎉</Title>
+        <Description>
+          닉네임과 학번을 입력하고<br />
+          이화좀비대학교의 특별한 게임에 도전해 보세요!<br />
+          <br />
+          닉네임은 리더보드에 순위를 표시하기 위해 필요하며, <br />
+          학번은 순위권 경품 수령 시 본인 확인 용도로만 사용됩니다.
+        </Description>
         {error && (
           <ErrorMessage>{error}</ErrorMessage>
         )}
@@ -149,22 +177,18 @@ const AuthModal = ({ onClose, onAuth }) => {
             required
           />
           <Button type="submit">
-            {isLogin ? '로그인' : '회원가입'}
+            시작하기
           </Button>
         </Form>
-        <SwitchText onClick={() => setIsLogin(!isLogin)}>
-          {isLogin ? '회원가입하기' : '로그인하기'}
-        </SwitchText>
+        <TextButton
+          type="button"
+          onClick={() => { onAuth(null); onClose(); }}
+        >
+          입력 없이 바로 시작
+        </TextButton>
       </ModalContent>
     </ModalOverlay>
   );
 };
-
-const ErrorMessage = styled.div`
-  color: #ff4e4e;
-  margin-bottom: 15px;
-  text-align: center;
-  font-size: 14px;
-`;
 
 export default AuthModal; 
