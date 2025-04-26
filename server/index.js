@@ -8,7 +8,7 @@ const app = express();
 
 // CORS 설정을 미들웨어 앞에 배치
 app.use(cors({
-  origin: true,
+  origin: ['https://zombie-smoky.vercel.app', 'http://localhost:5173'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
