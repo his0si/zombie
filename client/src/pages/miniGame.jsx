@@ -307,11 +307,9 @@ const MiniGame = () => {
       setScore(prev => prev + 1);
       game.score = score + 1;
       
-      // 점수에 따른 게임 속도 증가 - 지수적으로 증가
-      if (game.score % 30 === 0) {  // 더 자주 속도 증가
-        const speedIncrease = 0.2 + (game.score / 1000);  // 점수가 높을수록 더 많이 증가
-        game.gameSpeed += speedIncrease;
-      }
+      // 점수에 따른 게임 속도 증가 (더 완만하게)
+      // 최대 증가폭 제한, log2로 완만하게 증가
+      game.gameSpeed = game.initialSpeed + Math.min(4, Math.log2(game.score + 1) * 0.6);
     }
   };
 
@@ -439,11 +437,9 @@ const MiniGame = () => {
       game.score = newScore;
       setScore(newScore);
 
-      // 점수에 따른 게임 속도 증가
-      if (newScore % 30 === 0) {
-        const speedIncrease = 0.2 + (newScore / 1000);
-        game.gameSpeed += speedIncrease;
-      }
+      // 점수에 따른 게임 속도 증가 (더 완만하게)
+      // 최대 증가폭 제한, log2로 완만하게 증가
+      game.gameSpeed = game.initialSpeed + Math.min(4, Math.log2(newScore + 1) * 0.6);
     }
 
     // 나머지 게임 로직...
