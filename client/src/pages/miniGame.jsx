@@ -108,6 +108,19 @@ const GameOver = styled.div`
     font-size: clamp(14px, 3vw, 18px);
     margin-bottom: 15px;
   }
+
+  // 모바일 세로 화면에서 더 작게
+  @media (max-width: 480px) and (orientation: portrait) {
+    width: 90%;
+    max-width: 220px;
+    padding: 8px;
+    h2 {
+      font-size: 16px;
+    }
+    p {
+      font-size: 12px;
+    }
+  }
 `;
 
 const RestartButton = styled.button`
@@ -133,6 +146,17 @@ const GameBoxWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+const LoginNotice = styled.p`
+  color: #ff4e4e;
+  font-size: 14px;
+  margin-bottom: 10px;
+
+  @media (max-width: 480px) and (orientation: portrait) {
+    font-size: 11px;
+    margin-bottom: 7px;
+  }
 `;
 
 // 게임 클래스 정의
@@ -645,9 +669,9 @@ const MiniGame = () => {
         <h2>Game Over!</h2>
         <p>Final Score: {score}</p>
         {!currentUser && (
-          <p style={{ color: '#ff4e4e', fontSize: '14px', marginBottom: '10px' }}>
+          <LoginNotice>
             로그인하면 점수가 저장됩니다!
-          </p>
+          </LoginNotice>
         )}
         <RestartButton onClick={handleRestart}>
           Restart
