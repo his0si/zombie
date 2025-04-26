@@ -317,11 +317,15 @@ const MiniGame = () => {
 
   // 충돌 체크 함수
   const checkCollision = (dino, tree) => {
+    // 피격 범위(히트박스) 축소값(px)
+    const dinoHitboxShrink = 8; // 공룡 hitbox를 8px씩(좌우/상하) 줄임
+    const treeHitboxShrink = 6; // 장애물 hitbox를 6px씩(좌우/상하) 줄임
+
     return (
-      dino.x < tree.x + tree.width &&
-      dino.x + dino.width > tree.x &&
-      dino.y < tree.y + tree.height &&
-      dino.y + dino.height > tree.y
+      dino.x + dinoHitboxShrink < tree.x + tree.width - treeHitboxShrink &&
+      dino.x + dino.width - dinoHitboxShrink > tree.x + treeHitboxShrink &&
+      dino.y + dinoHitboxShrink < tree.y + tree.height - treeHitboxShrink &&
+      dino.y + dino.height - dinoHitboxShrink > tree.y + treeHitboxShrink
     );
   };
 
