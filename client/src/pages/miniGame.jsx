@@ -47,20 +47,21 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 console.log('API_BASE_URL:', API_BASE_URL); // 디버깅용 로그 추가
 
 const GameContainer = styled.div`
-  width: calc(var(--vw, 1vw) * 100);
-  height: calc(var(--vh, 1vh) * 100);
+  width: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: #000;
-  overflow: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
+  padding: 20px 0;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  margin: 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 `;
 
 const GameCanvas = styled.canvas`
@@ -605,11 +606,28 @@ const MiniGame = () => {
     loadLeaderboard();
   }, []);
 
+  useEffect(() => {
+    // Set global background color
+    document.body.style.backgroundColor = '#000';
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.body.style.overflow = 'auto';
+
+    return () => {
+      // Cleanup
+      document.body.style.backgroundColor = '';
+      document.body.style.margin = '';
+      document.body.style.padding = '';
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
     <GameContainer 
       onClick={handleJump}
       onTouchStart={handleTouchStart}
       onTouchMove={(e) => e.stopPropagation()}
+      style={{ margin: 0, padding: 0 }}
     >
       <ScoreDisplay>Score: {score}</ScoreDisplay>
       {!imagesLoaded && <div>Loading images...</div>}
