@@ -62,6 +62,8 @@ const GameContainer = styled.div`
   box-sizing: border-box;
   position: relative;
   z-index: 1;
+  overflow-y: auto;  // 스크롤 활성화
+  height: auto;      // 높이를 자동으로 설정
 `;
 
 const GameCanvas = styled.canvas`
