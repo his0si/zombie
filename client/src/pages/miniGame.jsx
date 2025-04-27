@@ -204,8 +204,8 @@ const LeaderboardButton = styled.button`
     color: #000;
   }
 
-  @media (max-width: 768px) and (orientation: landscape) {
-    display: none;
+  @media (max-width: 1024px) and (orientation: landscape) {
+    display: none !important;
   }
 `;
 
