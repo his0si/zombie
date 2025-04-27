@@ -240,7 +240,7 @@ class GameState {
     
     const newTree = {
       x: Math.round(GAME_CONSTANTS.TREE_START * this.scale),
-      y: Math.round(GAME_CONSTANTS.Y_BASE * this.scale),
+      y: Math.round(GAME_CONSTANTS.Y_BASE * this.scale + GAME_CONSTANTS.DINO_HEIGHT * this.scale - GAME_CONSTANTS.TREE_HEIGHT * this.scale),
       width: GAME_CONSTANTS.TREE_WIDTH * this.scale,
       height: GAME_CONSTANTS.TREE_HEIGHT * this.scale,
       type: Math.floor(Math.random() * 4)
@@ -251,7 +251,7 @@ class GameState {
     if (Math.random() < GAME_CONSTANTS.DOUBLE_TREE_CHANCE) {
       const secondTree = {
         x: Math.round((GAME_CONSTANTS.TREE_START + GAME_CONSTANTS.TREE_WIDTH) * this.scale),
-        y: Math.round(GAME_CONSTANTS.Y_BASE * this.scale),
+        y: Math.round(GAME_CONSTANTS.Y_BASE * this.scale + GAME_CONSTANTS.DINO_HEIGHT * this.scale - GAME_CONSTANTS.TREE_HEIGHT * this.scale),
         width: GAME_CONSTANTS.TREE_WIDTH * this.scale,
         height: GAME_CONSTANTS.TREE_HEIGHT * this.scale,
         type: Math.floor(Math.random() * 4)
