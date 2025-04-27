@@ -64,7 +64,7 @@ const GameContainer = styled.div`
   align-items: center;
   justify-content: center;
   background-color: #000;
-  padding: 0;  // 패딩 제거
+  padding: 0;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -72,8 +72,16 @@ const GameContainer = styled.div`
   box-sizing: border-box;
   position: relative;
   z-index: 1;
-  overflow-y: auto;  // 스크롤 활성화
-  height: auto;      // 높이를 자동으로 설정
+  overflow-y: auto;
+  height: auto;
+
+  @media (max-width: 768px) and (orientation: landscape) {
+    padding-top: 40px;
+  }
+
+  @media (max-width: 480px) and (orientation: landscape) {
+    padding-top: 30px;
+  }
 `;
 
 const GameCanvas = styled.canvas`
@@ -152,10 +160,18 @@ const RestartButton = styled.button`
 const GameBoxWrapper = styled.div`
   width: 90%;
   max-width: 800px;
-  margin: 0 auto 50px auto; 
+  margin: 0 auto 50px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media (max-width: 768px) and (orientation: landscape) {
+    margin: 0 auto 20px auto;
+  }
+
+  @media (max-width: 480px) and (orientation: landscape) {
+    margin: 0 auto 10px auto;
+  }
 `;
 
 const LoginNotice = styled.p`
@@ -186,6 +202,20 @@ const LeaderboardButton = styled.button`
   &:hover {
     background-color: #4eff4e;
     color: #000;
+  }
+
+  @media (max-width: 768px) and (orientation: landscape) {
+    top: 10px;
+    right: 10px;
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+
+  @media (max-width: 480px) and (orientation: landscape) {
+    top: 5px;
+    right: 5px;
+    padding: 6px 12px;
+    font-size: 12px;
   }
 `;
 
