@@ -86,7 +86,7 @@ const GameCanvas = styled.canvas`
 
 const ScoreDisplay = styled.div`
   font-size: clamp(18px, 5vw, 24px);
-  margin: 10px 0;
+  margin: 200px 0 10px 0;
   font-weight: bold;
   color: #4eff4e;
   text-shadow: 0 0 10px rgba(78, 255, 78, 0.5);
