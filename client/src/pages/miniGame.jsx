@@ -207,13 +207,6 @@ const LeaderboardButton = styled.button`
   @media (max-width: 768px) and (orientation: landscape) {
     display: none;
   }
-
-  @media (max-width: 480px) and (orientation: landscape) {
-    top: 5px;
-    right: 5px;
-    padding: 6px 12px;
-    font-size: 12px;
-  }
 `;
 
 // 게임 클래스 정의
