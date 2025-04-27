@@ -217,10 +217,18 @@ class GameState {
   }
 
   updateGameSpeed(newScore) {
-    this.gameSpeed = this.initialSpeed + Math.min(
-      GAME_CONSTANTS.MAX_SPEED_INCREASE,
-      Math.log2(newScore + 1) * GAME_CONSTANTS.SPEED_INCREASE_FACTOR
-    );
+    if (newScore < 2000) {
+      // 2000점 미만일 때는 기존 로그 함수 사용
+      this.gameSpeed = this.initialSpeed + Math.min(
+        GAME_CONSTANTS.MAX_SPEED_INCREASE,
+        Math.log2(newScore + 1) * GAME_CONSTANTS.SPEED_INCREASE_FACTOR
+      );
+    } else {
+      // 2000점 이상일 때는 선형적으로 증가
+      const baseSpeed = this.initialSpeed + Math.log2(2000 + 1) * GAME_CONSTANTS.SPEED_INCREASE_FACTOR;
+      const linearIncrease = (newScore - 2000) * 0.01; // 100점당 1씩 증가
+      this.gameSpeed = baseSpeed + linearIncrease;
+    }
   }
 
   createTree() {
