@@ -38,11 +38,18 @@ const ScoreItem = styled.div`
   justify-content: space-between;
   padding: 5px 0;
   border-bottom: 1px solid #4eff4e40;
+  font-size: ${props => props.rank > 3 ? '0.9em' : '1em'};
+  opacity: ${props => props.rank > 3 ? '0.8' : '1'};
+  color: #4eff4e;
 `;
 
 const Rank = styled.span`
   font-weight: bold;
   width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ${props => props.rank > 3 && 'margin-left: 0px;'}
 `;
 
 const Nickname = styled.span`
@@ -63,13 +70,20 @@ const Leaderboard = ({ scores }) => {
       <Title>Leaderboard 🏆</Title>
       <LimitNotice>리더보드에는 상위 10명까지만 표시됩니다</LimitNotice>
       <ScoreList>
-        {scores.map((score, index) => (
-          <ScoreItem key={index}>
-            <Rank>{index + 1}</Rank>
-            <Nickname>{score.nickname}</Nickname>
-            <Score>{score.score}</Score>
-          </ScoreItem>
-        ))}
+        {scores.map((score, index) => {
+          let rankDisplay;
+          if (index === 0) rankDisplay = '🥇';
+          else if (index === 1) rankDisplay = '🥈';
+          else if (index === 2) rankDisplay = '🥉';
+          else rankDisplay = index + 1;
+          return (
+            <ScoreItem key={index} rank={index + 1}>
+              <Rank rank={index + 1}>{rankDisplay}</Rank>
+              <Nickname>{score.nickname}</Nickname>
+              <Score>{score.score}</Score>
+            </ScoreItem>
+          );
+        })}
       </ScoreList>
     </LeaderboardContainer>
   );
