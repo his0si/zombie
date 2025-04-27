@@ -42,6 +42,10 @@ const GAME_CONSTANTS = {
   MIN_TREE_INTERVAL: 30,  // 최소 프레임 간격
   MAX_TREE_INTERVAL: 120,  // 최대 프레임 간격
   DINO_HITBOX_SHRINK: 8,
+  BASE_HITBOX_WIDTH: 40,  // 기본 히트박스 너비
+  BASE_HITBOX_HEIGHT: 40, // 기본 히트박스 높이
+  MIN_SCALE: 0.5,         // 최소 스케일
+  MAX_SCALE: 1.0,         // 최대 스케일
   ANIMATION_FRAME_RATE: 166.67, // 6 FPS
   SCORE_INCREASE_INTERVAL: 6,
   MAX_SPEED_INCREASE: 4,
@@ -180,7 +184,8 @@ class GameState {
     this.lastScoreFrame = 0;
     
     const scale = canvas.width / 800;
-    this.scale = scale;
+    this.scale = Math.min(Math.max(scale, GAME_CONSTANTS.MIN_SCALE), GAME_CONSTANTS.MAX_SCALE);
+    this.hitboxScale = this.scale; // 히트박스용 별도 스케일
     
     this.initializeDino(scale);
     this.trees = [];
@@ -375,13 +380,22 @@ const MiniGame = () => {
   };
 
   const checkCollision = (dino, tree) => {
-    const dinoHitboxShrink = GAME_CONSTANTS.DINO_HITBOX_SHRINK;
+    const game = gameRef.current;
+    const hitboxScale = game.hitboxScale;
+    
+    // 고정된 픽셀 값에 스케일 적용
+    const dinoHitboxShrink = GAME_CONSTANTS.DINO_HITBOX_SHRINK * hitboxScale;
+    const dinoWidth = GAME_CONSTANTS.BASE_HITBOX_WIDTH * hitboxScale;
+    const dinoHeight = GAME_CONSTANTS.BASE_HITBOX_HEIGHT * hitboxScale;
+    const treeWidth = GAME_CONSTANTS.TREE_WIDTH * hitboxScale;
+    const treeHeight = GAME_CONSTANTS.TREE_HEIGHT * hitboxScale;
 
+    // 실제 위치에서 히트박스 크기를 고려한 충돌 체크
     return (
-      dino.x + dinoHitboxShrink < tree.x + tree.width &&
-      dino.x + dino.width - dinoHitboxShrink > tree.x &&
-      dino.y + dinoHitboxShrink < tree.y + tree.height &&
-      dino.y + dino.height - dinoHitboxShrink > tree.y
+      dino.x + dinoHitboxShrink < tree.x + treeWidth &&
+      dino.x + dinoWidth - dinoHitboxShrink > tree.x &&
+      dino.y + dinoHitboxShrink < tree.y + treeHeight &&
+      dino.y + dinoHeight - dinoHitboxShrink > tree.y
     );
   };
 
@@ -556,8 +570,9 @@ const MiniGame = () => {
     canvas.height = canvasHeight;
 
     if (gameRef.current) {
-      const scale = canvasWidth / 800;
+      const scale = Math.min(Math.max(canvasWidth / 800, GAME_CONSTANTS.MIN_SCALE), GAME_CONSTANTS.MAX_SCALE);
       gameRef.current = new GameState(canvas);
+      gameRef.current.hitboxScale = scale;
       
       if (gameStarted) {
         gameRef.current.gameSpeed = gameRef.current.initialSpeed;
