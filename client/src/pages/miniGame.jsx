@@ -22,7 +22,7 @@ import lego2 from '../assets/lego2.png';
 import lego3 from '../assets/lego3.png';
 
 // 게임 상수 정의
-const CONSTANTS = {
+const GAME_CONSTANTS = {
   KEY_ESC: 27,
   KEY_SPACE: 32,
   MAX_JUMP: 8,          // 점프 높이 증가
@@ -40,7 +40,13 @@ const CONSTANTS = {
   MAX_TREE_DISTANCE: 600,   // 최대 거리 증가
   // 나무 생성 관련 상수 추가
   MIN_TREE_INTERVAL: 30,  // 최소 프레임 간격
-  MAX_TREE_INTERVAL: 120  // 최대 프레임 간격
+  MAX_TREE_INTERVAL: 120,  // 최대 프레임 간격
+  DINO_HITBOX_SHRINK: 8,
+  ANIMATION_FRAME_RATE: 166.67, // 6 FPS
+  SCORE_INCREASE_INTERVAL: 6,
+  MAX_SPEED_INCREASE: 4,
+  SPEED_INCREASE_FACTOR: 0.6,
+  DOUBLE_TREE_CHANCE: 0.3
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
@@ -171,36 +177,115 @@ class GameState {
     this.nextTreeTime = 0;
     this.initialSpeed = 5;
     this.gameSpeed = this.initialSpeed;
-    this.lastScoreFrame = 0;  // 마지막으로 점수를 증가시킨 프레임
+    this.lastScoreFrame = 0;
     
     const scale = canvas.width / 800;
+    this.scale = scale;
     
+    this.initializeDino(scale);
+    this.trees = [];
+    this.isCollision = false;
+  }
+
+  initializeDino(scale) {
     this.dino = {
       x: 50 * scale,
-      y: CONSTANTS.Y_BASE * scale,
-      width: CONSTANTS.DINO_WIDTH * scale,
-      height: CONSTANTS.DINO_HEIGHT * scale,
+      y: GAME_CONSTANTS.Y_BASE * scale,
+      width: GAME_CONSTANTS.DINO_WIDTH * scale,
+      height: GAME_CONSTANTS.DINO_HEIGHT * scale,
       jumping: false,
       jumpStartTime: 0,
       jumpDuration: 500
     };
-    
-    this.trees = [];
-    this.scale = scale;
-    this.isCollision = false;
   }
 
-  // 점수 계산 메서드 추가
   calculateScore() {
     const currentFrame = this.frameCount;
-    const scoreIncrease = Math.floor((currentFrame - this.lastScoreFrame) / 6);
+    const scoreIncrease = Math.floor((currentFrame - this.lastScoreFrame) / GAME_CONSTANTS.SCORE_INCREASE_INTERVAL);
     
     if (scoreIncrease > 0) {
-      this.lastScoreFrame = currentFrame - (currentFrame % 6);
+      this.lastScoreFrame = currentFrame - (currentFrame % GAME_CONSTANTS.SCORE_INCREASE_INTERVAL);
       return this.score + scoreIncrease;
     }
     
     return this.score;
+  }
+
+  updateGameSpeed(newScore) {
+    this.gameSpeed = this.initialSpeed + Math.min(
+      GAME_CONSTANTS.MAX_SPEED_INCREASE,
+      Math.log2(newScore + 1) * GAME_CONSTANTS.SPEED_INCREASE_FACTOR
+    );
+  }
+
+  createTree() {
+    const speedFactor = Math.min(2, this.gameSpeed / this.initialSpeed);
+    const minInterval = GAME_CONSTANTS.MIN_TREE_INTERVAL / speedFactor;
+    const maxInterval = GAME_CONSTANTS.MAX_TREE_INTERVAL / speedFactor;
+    
+    const interval = minInterval + (maxInterval - minInterval) * Math.random();
+    
+    const newTree = {
+      x: Math.round(GAME_CONSTANTS.TREE_START * this.scale),
+      y: Math.round(GAME_CONSTANTS.Y_BASE * this.scale),
+      width: GAME_CONSTANTS.TREE_WIDTH * this.scale,
+      height: GAME_CONSTANTS.TREE_HEIGHT * this.scale,
+      type: Math.floor(Math.random() * 4)
+    };
+    
+    this.trees.push(newTree);
+
+    if (Math.random() < GAME_CONSTANTS.DOUBLE_TREE_CHANCE) {
+      const secondTree = {
+        x: Math.round((GAME_CONSTANTS.TREE_START + GAME_CONSTANTS.TREE_WIDTH) * this.scale),
+        y: Math.round(GAME_CONSTANTS.Y_BASE * this.scale),
+        width: GAME_CONSTANTS.TREE_WIDTH * this.scale,
+        height: GAME_CONSTANTS.TREE_HEIGHT * this.scale,
+        type: Math.floor(Math.random() * 4)
+      };
+      this.trees.push(secondTree);
+    }
+    
+    this.nextTreeTime = this.frameCount + Math.floor(interval);
+  }
+
+  updateDinoPosition() {
+    if (this.dino.jumping) {
+      const currentTime = Date.now();
+      const jumpProgress = Math.min((currentTime - this.dino.jumpStartTime) / this.dino.jumpDuration, 1);
+      
+      if (jumpProgress < 1) {
+        const jumpHeight = Math.round(Math.sin(jumpProgress * Math.PI) * GAME_CONSTANTS.MAX_JUMP * 20 * this.scale);
+        this.dino.y = Math.round(GAME_CONSTANTS.Y_BASE * this.scale - jumpHeight);
+      } else {
+        this.dino.y = Math.round(GAME_CONSTANTS.Y_BASE * this.scale);
+        this.dino.jumping = false;
+      }
+    } else {
+      this.dino.y = Math.round(GAME_CONSTANTS.Y_BASE * this.scale);
+    }
+  }
+
+  updateTrees() {
+    const currentTime = Date.now();
+    const timeDiff = currentTime - this.lastMoveTime;
+    const moveDistance = (this.gameSpeed * timeDiff) / 16.67;
+
+    this.trees.forEach(tree => {
+      tree.x -= moveDistance;
+    });
+
+    this.trees = this.trees.filter(tree => tree.x > -50);
+    this.lastMoveTime = currentTime;
+  }
+
+  drawBaseLine() {
+    const baseLineY = Math.round(GAME_CONSTANTS.Y_BASE * this.scale + GAME_CONSTANTS.DINO_HEIGHT * this.scale);
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, baseLineY);
+    this.ctx.lineTo(this.canvas.width, baseLineY);
+    this.ctx.strokeStyle = '#4eff4e';
+    this.ctx.stroke();
   }
 }
 
@@ -216,15 +301,15 @@ const MiniGame = () => {
   const [leaderboardScores, setLeaderboardScores] = useState([]);
 
   const dinoSources = [dino0, dino1, dino2, dino3, dino4, dino5, dino6, dino7, dino8, dino9, dino10, dino11];
-  const legoSources = [lego0, lego1, lego2, lego3];  // cactus 대신 lego 이미지 사용
+  const legoSources = [lego0, lego1, lego2, lego3];
 
   const dinoImages = useRef([]).current;
-  const legoImages = useRef([]).current;  // cactus 대신 lego 이미지 사용
+  const legoImages = useRef([]).current;
 
   const loadImages = () => {
     console.log('Starting to load images...');
     let loadedCount = 0;
-    const totalImages = dinoSources.length + legoSources.length;  // cactus 대신 lego 이미지 사용
+    const totalImages = dinoSources.length + legoSources.length;
 
     const handleImageLoad = () => {
       loadedCount++;
@@ -235,32 +320,23 @@ const MiniGame = () => {
       }
     };
 
-    // 공룡 이미지 로드
-    dinoSources.forEach((src, index) => {
-      const img = new Image();
-      img.onload = handleImageLoad;
-      img.onerror = (e) => {
-        console.error('Failed to load image:', src);
-        handleImageLoad();
-      };
-      img.src = src;
-      dinoImages[index] = img;
-    });
+    const loadImageSet = (sources, imagesArray) => {
+      sources.forEach((src, index) => {
+        const img = new Image();
+        img.onload = handleImageLoad;
+        img.onerror = (e) => {
+          console.error('Failed to load image:', src);
+          handleImageLoad();
+        };
+        img.src = src;
+        imagesArray[index] = img;
+      });
+    };
 
-    // 레고 이미지 로드
-    legoSources.forEach((src, index) => {
-      const img = new Image();
-      img.onload = handleImageLoad;
-      img.onerror = (e) => {
-        console.error('Failed to load image:', src);
-        handleImageLoad();
-      };
-      img.src = src;
-      legoImages[index] = img;
-    });
+    loadImageSet(dinoSources, dinoImages);
+    loadImageSet(legoSources, legoImages);
   };
 
-  // 공룡 그리기 함수
   const drawDino = (ctx, dino) => {
     if (!imagesLoaded) return;
     
@@ -268,9 +344,7 @@ const MiniGame = () => {
       const game = gameRef.current;
       const currentTime = Date.now();
       const timeDiff = currentTime - game.lastAnimationTime;
-      
-      // 166.67ms마다 이미지 변경 (약 6번/초)
-      const imageIndex = Math.floor((timeDiff / 166.67) % 12);
+      const imageIndex = Math.floor((timeDiff / GAME_CONSTANTS.ANIMATION_FRAME_RATE) % 12);
       
       ctx.drawImage(
         dinoImages[imageIndex],
@@ -284,13 +358,12 @@ const MiniGame = () => {
     }
   };
 
-  // 나무 그리기 함수
   const drawTree = (ctx, tree) => {
     if (!imagesLoaded) return;
     
     try {
       ctx.drawImage(
-        legoImages[tree.type],  // cactus 대신 lego 이미지 사용
+        legoImages[tree.type],
         tree.x,
         tree.y,
         tree.width,
@@ -301,33 +374,17 @@ const MiniGame = () => {
     }
   };
 
-  // 점수 업데이트 함수
-  const updateScore = (game) => {
-    if (game.frameCount % 6 === 0) {
-      setScore(prev => prev + 1);
-      game.score = score + 1;
-      
-      // 점수에 따른 게임 속도 증가 (더 완만하게)
-      // 최대 증가폭 제한, log2로 완만하게 증가
-      game.gameSpeed = game.initialSpeed + Math.min(4, Math.log2(game.score + 1) * 0.6);
-    }
-  };
-
-  // 충돌 체크 함수
   const checkCollision = (dino, tree) => {
-    // 피격 범위(히트박스) 축소값(px)
-    const dinoHitboxShrink = 8; // 공룡 hitbox를 8px씩(좌우/상하) 줄임
-    const treeHitboxShrink = 6; // 장애물 hitbox를 6px씩(좌우/상하) 줄임
+    const dinoHitboxShrink = GAME_CONSTANTS.DINO_HITBOX_SHRINK;
 
     return (
-      dino.x + dinoHitboxShrink < tree.x + tree.width - treeHitboxShrink &&
-      dino.x + dino.width - dinoHitboxShrink > tree.x + treeHitboxShrink &&
-      dino.y + dinoHitboxShrink < tree.y + tree.height - treeHitboxShrink &&
-      dino.y + dino.height - dinoHitboxShrink > tree.y + treeHitboxShrink
+      dino.x + dinoHitboxShrink < tree.x + tree.width &&
+      dino.x + dino.width - dinoHitboxShrink > tree.x &&
+      dino.y + dinoHitboxShrink < tree.y + tree.height &&
+      dino.y + dino.height - dinoHitboxShrink > tree.y
     );
   };
 
-  // 점프 처리 함수
   const handleJump = () => {
     if (!gameStarted) {
       setGameStarted(true);
@@ -341,16 +398,13 @@ const MiniGame = () => {
     game.dino.jumpStartTime = Date.now();
   };
 
-  // Auth 핸들러 수정
   const handleAuth = (userData) => {
     console.log('Auth successful:', userData);
     setCurrentUser(userData);
     setShowAuthModal(false);
-    // 리더보드 데이터 다시 로드
     loadLeaderboard();
   };
 
-  // 리더보드 데이터 로드
   const loadLeaderboard = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/leaderboard`, {
@@ -364,7 +418,6 @@ const MiniGame = () => {
         throw new Error('Failed to fetch leaderboard');
       }
       const data = await response.json();
-      // highScore를 score로 변환
       const mapped = data.map(item => ({
         ...item,
         score: item.highScore
@@ -375,7 +428,6 @@ const MiniGame = () => {
     }
   };
 
-  // 게임 오버 처리 수정
   const handleGameOver = async () => {
     setGameOver(true);
     const finalScore = gameRef.current.score;
@@ -410,7 +462,6 @@ const MiniGame = () => {
           alert(`새로운 최고 점수를 달성했습니다! (이전 기록: ${data.previousScore}점)`);
         }
         
-        // 리더보드 업데이트
         loadLeaderboard();
       } catch (error) {
         console.error('Score save error:', error);
@@ -421,111 +472,39 @@ const MiniGame = () => {
     }
   };
 
-  // 게임 루프 함수
   const gameLoop = () => {
     const game = gameRef.current;
     if (!game || gameOver || !imagesLoaded) return;
 
     const { ctx, dino } = game;
     
-    // 프레임 카운터 업데이트
     game.frameCount++;
 
-    // 점수 업데이트 - 6프레임마다 1점씩 증가
     const newScore = game.calculateScore();
     if (newScore !== game.score) {
       game.score = newScore;
       setScore(newScore);
-
-      // 점수에 따른 게임 속도 증가 (더 완만하게)
-      // 최대 증가폭 제한, log2로 완만하게 증가
-      game.gameSpeed = game.initialSpeed + Math.min(4, Math.log2(newScore + 1) * 0.6);
+      game.updateGameSpeed(newScore);
     }
 
-    // 나머지 게임 로직...
     ctx.clearRect(0, 0, game.canvas.width, game.canvas.height);
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, game.canvas.width, game.canvas.height);
 
-    // 바닥 선 그리기
-    const baseLineY = Math.round(CONSTANTS.Y_BASE * game.scale + CONSTANTS.DINO_HEIGHT * game.scale);
-    ctx.beginPath();
-    ctx.moveTo(0, baseLineY);
-    ctx.lineTo(game.canvas.width, baseLineY);
-    ctx.strokeStyle = '#4eff4e';
-    ctx.stroke();
+    game.drawBaseLine();
+    game.updateDinoPosition();
+    game.updateTrees();
 
-    // 점프 로직
-    if (dino.jumping) {
-      const currentTime = Date.now();
-      const jumpProgress = Math.min((currentTime - dino.jumpStartTime) / dino.jumpDuration, 1);
-      
-      if (jumpProgress < 1) {
-        const jumpHeight = Math.round(Math.sin(jumpProgress * Math.PI) * CONSTANTS.MAX_JUMP * 20 * game.scale);
-        dino.y = Math.round(CONSTANTS.Y_BASE * game.scale - jumpHeight);
-      } else {
-        dino.y = Math.round(CONSTANTS.Y_BASE * game.scale);
-        dino.jumping = false;
-      }
-    } else {
-      dino.y = Math.round(CONSTANTS.Y_BASE * game.scale);
-    }
-
-    // 시간 기반 이동 속도 계산
-    const currentTime = Date.now();
-    const timeDiff = currentTime - game.lastMoveTime;
-    const moveDistance = (game.gameSpeed * timeDiff) / 16.67;  // 16.67ms는 약 60FPS의 한 프레임 시간
-
-    // 나무 이동
-    game.trees.forEach(tree => {
-      tree.x -= moveDistance;
-    });
-
-    // 화면을 벗어난 나무 제거
-    game.trees = game.trees.filter(tree => tree.x > -50);
-
-    // 나무 생성 로직
     if (game.frameCount >= game.nextTreeTime) {
-      const speedFactor = Math.min(2, game.gameSpeed / game.initialSpeed);
-      const minInterval = CONSTANTS.MIN_TREE_INTERVAL / speedFactor;
-      const maxInterval = CONSTANTS.MAX_TREE_INTERVAL / speedFactor;
-      
-      const interval = minInterval + (maxInterval - minInterval) * Math.random();
-      
-      const newTree = {
-        x: Math.round(CONSTANTS.TREE_START * game.scale),
-        y: Math.round(CONSTANTS.Y_BASE * game.scale),
-        width: CONSTANTS.TREE_WIDTH * game.scale,
-        height: CONSTANTS.TREE_HEIGHT * game.scale,
-        type: Math.floor(Math.random() * 4)  // 레고 이미지 4개 중 랜덤 선택
-      };
-      
-      game.trees.push(newTree);
-
-      // 30% 확률로 두 번째 나무 생성
-      if (Math.random() < 0.3) {
-        const secondTree = {
-          x: Math.round((CONSTANTS.TREE_START + CONSTANTS.TREE_WIDTH) * game.scale),
-          y: Math.round(CONSTANTS.Y_BASE * game.scale),
-          width: CONSTANTS.TREE_WIDTH * game.scale,
-          height: CONSTANTS.TREE_HEIGHT * game.scale,
-          type: Math.floor(Math.random() * 4)
-        };
-        game.trees.push(secondTree);
-      }
-      
-      game.nextTreeTime = game.frameCount + Math.floor(interval);
+      game.createTree();
     }
 
-    // 나무 그리기
     game.trees.forEach(tree => {
       drawTree(ctx, tree);
     });
 
-    // 공룡 그리기
     drawDino(ctx, dino);
 
-    // 충돌 체크
     for (const tree of game.trees) {
       if (checkCollision(dino, tree)) {
         handleGameOver();
@@ -533,13 +512,9 @@ const MiniGame = () => {
       }
     }
 
-    // 마지막 이동 시간 업데이트
-    game.lastMoveTime = currentTime;
-
     requestAnimationFrame(gameLoop);
   };
 
-  // 게임 초기화 함수
   const initGame = () => {
     console.log('Initializing game...');
     const canvas = canvasRef.current;
@@ -558,18 +533,15 @@ const MiniGame = () => {
     loadImages();
   };
 
-  // 게임 재시작 함수 수정
   const handleRestart = (e) => {
     e.stopPropagation();
     setScore(0);
     setGameOver(false);
     setGameStarted(true);
     initGame();
-    // 리더보드 업데이트
     loadLeaderboard();
   };
 
-  // 캔버스 크기 조정 함수
   const resizeCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -577,28 +549,22 @@ const MiniGame = () => {
     const container = canvas.parentElement;
     const containerWidth = container.clientWidth;
     
-    // 모바일에서는 화면 너비의 90%를 사용
     const canvasWidth = Math.min(800, containerWidth * 0.9);
-    const canvasHeight = (canvasWidth * 300) / 800; // 비율 유지
+    const canvasHeight = (canvasWidth * 300) / 800;
 
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
-    // 게임 상태 업데이트
     if (gameRef.current) {
       const scale = canvasWidth / 800;
-      
-      // 게임 상태 재초기화
       gameRef.current = new GameState(canvas);
       
-      // 게임 시작 상태 유지
       if (gameStarted) {
         gameRef.current.gameSpeed = gameRef.current.initialSpeed;
       }
     }
   };
 
-  // 터치 이벤트 핸들러
   const handleTouchStart = (e) => {
     handleJump();
   };
@@ -614,10 +580,8 @@ const MiniGame = () => {
   }, [gameStarted, gameOver, imagesLoaded]);
 
   useEffect(() => {
-    // 초기 캔버스 크기 설정
     resizeCanvas();
 
-    // 리사이즈 이벤트 리스너
     window.addEventListener('resize', resizeCanvas);
     window.addEventListener('orientationchange', resizeCanvas);
 
@@ -627,20 +591,17 @@ const MiniGame = () => {
     };
   }, []);
 
-  // 컴포넌트 마운트시 리더보드 로드
   useEffect(() => {
     loadLeaderboard();
   }, []);
 
   useEffect(() => {
-    // Set global background color
     document.body.style.backgroundColor = '#000';
     document.body.style.margin = '0';
     document.body.style.padding = '0';
     document.body.style.overflow = 'auto';
 
     return () => {
-      // Cleanup
       document.body.style.backgroundColor = '';
       document.body.style.margin = '';
       document.body.style.padding = '';
