@@ -9,6 +9,7 @@ const LeaderboardContainer = styled.div`
   color: #4eff4e;
   width: 91%;
   margin-top: 20px;
+  margin-bottom: 40px;
   box-sizing: border-box;
   overflow-y: auto;
 `;

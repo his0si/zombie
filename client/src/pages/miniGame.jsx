@@ -86,7 +86,7 @@ const GameCanvas = styled.canvas`
 
 const ScoreDisplay = styled.div`
   font-size: clamp(18px, 5vw, 24px);
-  margin: 200px 0 10px 0;
+  margin: 100px 0 10px 0;
   font-weight: bold;
   color: #4eff4e;
   text-shadow: 0 0 10px rgba(78, 255, 78, 0.5);
@@ -217,16 +217,16 @@ class GameState {
   }
 
   updateGameSpeed(newScore) {
-    if (newScore < 2000) {
-      // 2000점 미만일 때는 기존 로그 함수 사용
+    if (newScore < 800) {
+      // 800점 미만일 때는 기존 로그 함수 사용
       this.gameSpeed = this.initialSpeed + Math.min(
         GAME_CONSTANTS.MAX_SPEED_INCREASE,
         Math.log2(newScore + 1) * GAME_CONSTANTS.SPEED_INCREASE_FACTOR
       );
     } else {
-      // 2000점 이상일 때는 선형적으로 증가
-      const baseSpeed = this.initialSpeed + Math.log2(2000 + 1) * GAME_CONSTANTS.SPEED_INCREASE_FACTOR;
-      const linearIncrease = (newScore - 2000) * 0.01; // 100점당 1씩 증가
+      // 800점 이상일 때는 선형적으로 증가
+      const baseSpeed = this.initialSpeed + Math.log2(800 + 1) * GAME_CONSTANTS.SPEED_INCREASE_FACTOR;
+      const linearIncrease = (newScore - 800) * 0.01; // 100점당 1씩 증가
       this.gameSpeed = baseSpeed + linearIncrease;
     }
   }
