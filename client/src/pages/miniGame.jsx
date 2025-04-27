@@ -39,8 +39,8 @@ const GAME_CONSTANTS = {
   MIN_TREE_DISTANCE: 200,  // 최소 거리 증가
   MAX_TREE_DISTANCE: 600,   // 최대 거리 증가
   // 나무 생성 관련 상수 추가
-  MIN_TREE_INTERVAL: 30,  // 최소 프레임 간격
-  MAX_TREE_INTERVAL: 120,  // 최대 프레임 간격
+  MIN_TREE_INTERVAL: 40,  // 최소 프레임 간격 
+  MAX_TREE_INTERVAL: 150,  // 최대 프레임 간격 
   DINO_HITBOX_SHRINK: 8,
   BASE_HITBOX_WIDTH: 40,  // 기본 히트박스 너비
   BASE_HITBOX_HEIGHT: 40, // 기본 히트박스 높이
