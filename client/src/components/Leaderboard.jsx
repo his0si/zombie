@@ -19,6 +19,13 @@ const Title = styled.h3`
   font-size: 18px;
 `;
 
+const LimitNotice = styled.p`
+  text-align: center;
+  color: #ffffff;
+  font-size: 12px;
+  margin-bottom: 15px;
+`;
+
 const ScoreList = styled.div`
   display: flex;
   flex-direction: column;
@@ -53,6 +60,7 @@ const Leaderboard = ({ scores }) => {
   return (
     <LeaderboardContainer>
       <Title>Leaderboard 🏆</Title>
+      <LimitNotice>리더보드에는 상위 10명까지만 표시됩니다</LimitNotice>
       <ScoreList>
         {scores.map((score, index) => (
           <ScoreItem key={index}>
