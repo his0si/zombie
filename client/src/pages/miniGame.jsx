@@ -205,10 +205,7 @@ const LeaderboardButton = styled.button`
   }
 
   @media (max-width: 768px) and (orientation: landscape) {
-    top: 10px;
-    right: 10px;
-    padding: 8px 15px;
-    font-size: 14px;
+    display: none;
   }
 
   @media (max-width: 480px) and (orientation: landscape) {
