@@ -562,9 +562,18 @@ const MiniGame = () => {
 
     const container = canvas.parentElement;
     const containerWidth = container.clientWidth;
-    
-    const canvasWidth = Math.min(800, containerWidth * 0.9);
-    const canvasHeight = (canvasWidth * 300) / 800;
+    const aspectRatio = 800 / 300;
+    const minHeight = 200;
+    const maxWidth = 800;
+
+    let canvasWidth = Math.min(maxWidth, containerWidth * 0.9);
+    let canvasHeight = canvasWidth / aspectRatio;
+
+    // 만약 높이가 너무 작으면, height를 기준으로 다시 계산
+    if (canvasHeight < minHeight) {
+      canvasHeight = minHeight;
+      canvasWidth = canvasHeight * aspectRatio;
+    }
 
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
