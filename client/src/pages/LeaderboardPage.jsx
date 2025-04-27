@@ -21,7 +21,6 @@ const Container = styled.div`
 
 const Title = styled.h1`
   font-size: clamp(24px, 5vw, 32px);
-  margin-bottom: 30px;
   color: #4eff4e;
   text-shadow: 0 0 10px rgba(78, 255, 78, 0.5);
 `;
@@ -53,7 +52,7 @@ const LeaderboardContainer = styled.div`
   color: #4eff4e;
   width: 91%;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 0 auto 20px auto;
   box-sizing: border-box;
   overflow-y: auto;
   position: relative;

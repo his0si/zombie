@@ -64,7 +64,7 @@ const GameContainer = styled.div`
   align-items: center;
   justify-content: center;
   background-color: #000;
-  padding: 20px 0;
+  padding: 0;  // 패딩 제거
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -86,7 +86,7 @@ const GameCanvas = styled.canvas`
 
 const ScoreDisplay = styled.div`
   font-size: clamp(18px, 5vw, 24px);
-  margin: 100px 0 10px 0;
+  margin: 0 0 10px 0;
   font-weight: bold;
   color: #4eff4e;
   text-shadow: 0 0 10px rgba(78, 255, 78, 0.5);
@@ -152,7 +152,7 @@ const RestartButton = styled.button`
 const GameBoxWrapper = styled.div`
   width: 90%;
   max-width: 800px;
-  margin: 0 auto;
+  margin: 0 auto 50px auto; 
   display: flex;
   flex-direction: column;
   align-items: center;
