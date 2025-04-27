@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import AuthModal from '../components/AuthModal';
-import Leaderboard from '../components/Leaderboard';
+import { useNavigate } from 'react-router-dom';
 
 import dino0 from '../assets/dino0.png';
 import dino1 from '../assets/dino1.png';
@@ -169,6 +169,26 @@ const LoginNotice = styled.p`
   }
 `;
 
+const LeaderboardButton = styled.button`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: transparent;
+  color: #4eff4e;
+  border: 2px solid #4eff4e;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  z-index: 2;
+  
+  &:hover {
+    background-color: #4eff4e;
+    color: #000;
+  }
+`;
+
 // 게임 클래스 정의
 class GameState {
   constructor(canvas) {
@@ -311,7 +331,7 @@ const MiniGame = () => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-  const [leaderboardScores, setLeaderboardScores] = useState([]);
+  const navigate = useNavigate();
 
   const dinoSources = [dino0, dino1, dino2, dino3, dino4, dino5, dino6, dino7, dino8, dino9, dino10, dino11];
   const legoSources = [lego0, lego1, lego2, lego3];
@@ -424,30 +444,6 @@ const MiniGame = () => {
     console.log('Auth successful:', userData);
     setCurrentUser(userData);
     setShowAuthModal(false);
-    loadLeaderboard();
-  };
-
-  const loadLeaderboard = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/leaderboard`, {
-        mode: 'cors',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch leaderboard');
-      }
-      const data = await response.json();
-      const mapped = data.map(item => ({
-        ...item,
-        score: item.highScore
-      }));
-      setLeaderboardScores(mapped);
-    } catch (error) {
-      console.error('Leaderboard load error:', error);
-    }
   };
 
   const handleGameOver = async () => {
@@ -457,7 +453,6 @@ const MiniGame = () => {
     if (currentUser && finalScore > 0) {
       try {
         console.log('Saving score for user:', currentUser);
-        
         const response = await fetch(`${API_BASE_URL}/api/scores`, {
           method: 'POST',
           headers: {
@@ -472,19 +467,14 @@ const MiniGame = () => {
             score: finalScore
           })
         });
-
         const data = await response.json();
         console.log('Score save response:', data);
-
         if (!response.ok) {
           throw new Error(data.message || '점수 저장 중 오류가 발생했습니다.');
         }
-
         if (data.newHighScore) {
           alert(`새로운 최고 점수를 달성했습니다! (이전 기록: ${data.previousScore}점)`);
         }
-        
-        loadLeaderboard();
       } catch (error) {
         console.error('Score save error:', error);
         alert(error.message || '점수 저장에 실패했습니다.');
@@ -561,7 +551,6 @@ const MiniGame = () => {
     setGameOver(false);
     setGameStarted(true);
     initGame();
-    loadLeaderboard();
   };
 
   const resizeCanvas = () => {
@@ -624,10 +613,6 @@ const MiniGame = () => {
   }, []);
 
   useEffect(() => {
-    loadLeaderboard();
-  }, []);
-
-  useEffect(() => {
     document.body.style.backgroundColor = '#000';
     document.body.style.margin = '0';
     document.body.style.padding = '0';
@@ -648,6 +633,12 @@ const MiniGame = () => {
       onTouchMove={(e) => e.stopPropagation()}
       style={{ margin: 0, padding: 0 }}
     >
+      <LeaderboardButton onClick={(e) => {
+        e.stopPropagation();
+        navigate('/leaderboard');
+      }}>
+        Leaderboard 🏆
+      </LeaderboardButton>
       <ScoreDisplay>Score: {score}</ScoreDisplay>
       {!imagesLoaded && <div>Loading images...</div>}
       <GameBoxWrapper>
@@ -656,7 +647,6 @@ const MiniGame = () => {
           width={800}
           height={300}
         />
-        <Leaderboard scores={leaderboardScores} />
       </GameBoxWrapper>
       <GameOver show={gameOver}>
         <h2>Game Over!</h2>
