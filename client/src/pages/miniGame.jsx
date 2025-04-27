@@ -74,11 +74,12 @@ const GameContainer = styled.div`
   z-index: 1;
   overflow-y: auto;
   height: auto;
-  padding-top: 60px;
-  @media (max-width: 768px) {
+
+  @media (max-width: 768px) and (orientation: landscape) {
     padding-top: 40px;
   }
-  @media (max-width: 480px) {
+
+  @media (max-width: 480px) and (orientation: landscape) {
     padding-top: 30px;
   }
 `;
@@ -185,9 +186,9 @@ const LoginNotice = styled.p`
 `;
 
 const LeaderboardButton = styled.button`
-  position: fixed;
-  top: 16px;
-  right: 16px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
   padding: 10px 20px;
   background-color: transparent;
   color: #4eff4e;
@@ -196,24 +197,25 @@ const LeaderboardButton = styled.button`
   cursor: pointer;
   font-size: 16px;
   transition: all 0.3s ease;
-  z-index: 100;
+  z-index: 2;
   
   &:hover {
     background-color: #4eff4e;
     color: #000;
   }
 
-  @media (max-width: 768px) {
-    top: 8px;
-    right: 8px;
+  @media (max-width: 768px) and (orientation: landscape) {
+    top: 10px;
+    right: 10px;
+    padding: 8px 15px;
     font-size: 14px;
-    padding: 6px 12px;
   }
-  @media (max-width: 480px) {
-    top: 4px;
-    right: 4px;
+
+  @media (max-width: 480px) and (orientation: landscape) {
+    top: 5px;
+    right: 5px;
+    padding: 6px 12px;
     font-size: 12px;
-    padding: 4px 8px;
   }
 `;
 
