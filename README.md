@@ -1,8 +1,9 @@
 # zombie
 
-_**2025 대동제 이화좀비대학교 학생증 굿즈 QR코드 사이트**_<br>
+2025 대동제 이화좀비대학교 학생증 굿즈 QR코드 사이트
 
-배포 링크: https://zombie-smoky.vercel.app/
+[📍사이트에서 기능 확인해보기](https://zombie-smoky.vercel.app/)
+
 
 <details>
 <summary> 시현 영상 </summary>
@@ -47,5 +48,9 @@ _**2025 대동제 이화좀비대학교 학생증 굿즈 QR코드 사이트**_<b
 - Database: MongoDB
   
 <br>
+
+  ## 🖱️ 기술 블로그 
+
+[기술 블로그 회고록 바로가기](https://his0si.tistory.com/182)
 
 
