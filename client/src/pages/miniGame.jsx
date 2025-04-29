@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import AuthModal from '../components/AuthModal';
 import { useNavigate } from 'react-router-dom';
@@ -447,7 +447,7 @@ const MiniGame = () => {
     );
   };
 
-  const handleJump = () => {
+  const handleJump = useCallback(() => {
     if (!gameStarted) {
       setGameStarted(true);
       return;
@@ -458,7 +458,7 @@ const MiniGame = () => {
     
     game.dino.jumping = true;
     game.dino.jumpStartTime = Date.now();
-  };
+  }, [gameStarted, gameOver]);
 
   const handleAuth = (userData) => {
     console.log('Auth successful:', userData);
@@ -640,7 +640,7 @@ const MiniGame = () => {
       window.removeEventListener('orientationchange', resizeCanvas);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [handleJump]);
 
   useEffect(() => {
     document.body.style.backgroundColor = '#000';
