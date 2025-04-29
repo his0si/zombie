@@ -626,9 +626,19 @@ const MiniGame = () => {
     window.addEventListener('resize', resizeCanvas);
     window.addEventListener('orientationchange', resizeCanvas);
 
+    // Add keyboard event listener
+    const handleKeyDown = (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault(); // Prevent page scroll on space
+        handleJump();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       window.removeEventListener('orientationchange', resizeCanvas);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
