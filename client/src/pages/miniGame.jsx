@@ -116,6 +116,7 @@ const ScoreDisplay = styled.div`
 `;
 
 const GameBoxWrapper = styled.div`
+  position: relative;
   width: 90%;
   max-width: 800px;
   margin: 0 auto 50px auto;
