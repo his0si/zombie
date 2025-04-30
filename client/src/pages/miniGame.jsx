@@ -630,10 +630,7 @@ const MiniGame = () => {
   };
 
   const handleTouchStart = (e) => {
-    // 모달이나 버튼을 터치한 경우 이벤트 전파 중지
-    if (e.target.closest('.auth-modal') || e.target.closest('button')) {
-      return;
-    }
+    if (showAuthModal) return;
     e.preventDefault();
     e.stopPropagation();
     setIsTouching(true);
@@ -641,19 +638,13 @@ const MiniGame = () => {
   };
 
   const handleTouchMove = (e) => {
-    // 모달이나 버튼을 터치한 경우 이벤트 전파 중지
-    if (e.target.closest('.auth-modal') || e.target.closest('button')) {
-      return;
-    }
+    if (showAuthModal) return;
     e.preventDefault();
     e.stopPropagation();
   };
 
   const handleTouchEnd = (e) => {
-    // 모달이나 버튼을 터치한 경우 이벤트 전파 중지
-    if (e.target.closest('.auth-modal') || e.target.closest('button')) {
-      return;
-    }
+    if (showAuthModal) return;
     e.preventDefault();
     e.stopPropagation();
     setIsTouching(false);
@@ -665,13 +656,13 @@ const MiniGame = () => {
 
   useEffect(() => {
     const animateJump = () => {
-      if (isTouching) {
+      if (isTouching && !showAuthModal) {
         handleJump();
       }
       animationRef.current = requestAnimationFrame(animateJump);
     };
 
-    if (isTouching) {
+    if (isTouching && !showAuthModal) {
       animationRef.current = requestAnimationFrame(animateJump);
     }
 
@@ -680,7 +671,7 @@ const MiniGame = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isTouching]);
+  }, [isTouching, showAuthModal]);
 
   useEffect(() => {
     if (gameStarted && !gameOver && imagesLoaded) {
