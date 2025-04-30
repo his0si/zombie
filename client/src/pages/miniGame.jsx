@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import AuthModal from '../components/AuthModal';
+import GameOverModal from '../components/GameOverModal';
 import { useNavigate } from 'react-router-dom';
 
 import dino0 from '../assets/dino0.png';
@@ -112,63 +113,6 @@ const ScoreDisplay = styled.div`
   -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-`;
-
-const GameOverModal = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: #4eff4e;
-  padding: clamp(10px, 2vw, 15px);
-  border-radius: 8px;
-  text-align: center;
-  display: ${props => props.show ? 'block' : 'none'};
-  width: 80%;
-  max-width: 300px;
-  text-shadow: 0 0 10px rgba(78, 255, 78, 0.5);
-  border: 1px solid #4eff4e;
-  box-shadow: 0 0 10px rgba(78, 255, 78, 0.3);
-  z-index: 1000;
-
-  h2 {
-    font-size: clamp(18px, 4vw, 24px);
-    margin-bottom: 10px;
-  }
-
-  p {
-    font-size: clamp(14px, 3vw, 18px);
-    margin-bottom: 15px;
-  }
-
-  @media (max-width: 480px) and (orientation: portrait) {
-    width: 90%;
-    max-width: 220px;
-    padding: 8px;
-    h2 {
-      font-size: 16px;
-    }
-    p {
-      font-size: 12px;
-    }
-  }
-`;
-
-const RestartButton = styled.button`
-  margin-top: 15px;
-  padding: clamp(6px, 1.5vw, 8px) clamp(12px, 2.5vw, 15px);
-  background-color: #4eff4e;
-  color: black;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: clamp(12px, 3vw, 14px);
-  font-weight: bold;
-  
-  &:hover {
-    background-color: #45ff45;
-  }
 `;
 
 const GameBoxWrapper = styled.div`
@@ -741,13 +685,13 @@ const MiniGame = () => {
           width={800}
           height={300}
         />
+        <GameOverModal 
+          show={gameOver}
+          score={score}
+          currentUser={currentUser}
+          onRestart={handleRestart}
+        />
       </GameBoxWrapper>
-      <GameOver 
-        show={gameOver}
-        score={score}
-        currentUser={currentUser}
-        onRestart={handleRestart}
-      />
       {showAuthModal && (
         <AuthModal
           onClose={() => setShowAuthModal(false)}
@@ -755,23 +699,6 @@ const MiniGame = () => {
         />
       )}
     </GameContainer>
-  );
-};
-
-const GameOver = ({ show, score, currentUser, onRestart }) => {
-  return (
-    <GameOverModal show={show}>
-      <h2>Game Over!</h2>
-      <p>Final Score: {score}</p>
-      {!currentUser && (
-        <LoginNotice>
-          로그인하면 점수가 저장됩니다!
-        </LoginNotice>
-      )}
-      <RestartButton onClick={onRestart}>
-        Restart
-      </RestartButton>
-    </GameOverModal>
   );
 };
 
