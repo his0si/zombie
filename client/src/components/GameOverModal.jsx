@@ -18,6 +18,7 @@ const Modal = styled.div`
   border: 1px solid #4eff4e;
   box-shadow: 0 0 10px rgba(78, 255, 78, 0.3);
   z-index: 1000;
+  pointer-events: auto;
 
   h2 {
     font-size: clamp(18px, 4vw, 24px);
@@ -40,6 +41,18 @@ const Modal = styled.div`
       font-size: 12px;
     }
   }
+`;
+
+const ModalWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
 `;
 
 const LoginNotice = styled.p`
@@ -71,18 +84,20 @@ const RestartButton = styled.button`
 
 const GameOverModal = ({ show, score, currentUser, onRestart }) => {
   return (
-    <Modal show={show}>
-      <h2>Game Over!</h2>
-      <p>Final Score: {score}</p>
-      {!currentUser && (
-        <LoginNotice>
-          로그인하면 점수가 저장됩니다!
-        </LoginNotice>
-      )}
-      <RestartButton onClick={onRestart}>
-        Restart
-      </RestartButton>
-    </Modal>
+    <ModalWrapper>
+      <Modal show={show}>
+        <h2>Game Over!</h2>
+        <p>Final Score: {score}</p>
+        {!currentUser && (
+          <LoginNotice>
+            로그인하면 점수가 저장됩니다!
+          </LoginNotice>
+        )}
+        <RestartButton onClick={onRestart}>
+          Restart
+        </RestartButton>
+      </Modal>
+    </ModalWrapper>
   );
 };
 
