@@ -90,6 +90,13 @@ const GameCanvas = styled.canvas`
   max-width: 100%;
   height: auto;
   touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 `;
 
 const ScoreDisplay = styled.div`
@@ -98,6 +105,13 @@ const ScoreDisplay = styled.div`
   font-weight: bold;
   color: #4eff4e;
   text-shadow: 0 0 10px rgba(78, 255, 78, 0.5);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 `;
 
 const GameOver = styled.div`
@@ -610,6 +624,7 @@ const MiniGame = () => {
   const handleTouchStart = (e) => {
     if (e.target.tagName === 'CANVAS') {
       e.preventDefault();
+      e.stopPropagation();
       setIsTouching(true);
       handleJump();
     }
@@ -618,6 +633,7 @@ const MiniGame = () => {
   const handleTouchMove = (e) => {
     if (e.target.tagName === 'CANVAS') {
       e.preventDefault();
+      e.stopPropagation();
       if (isTouching) {
         handleJump();
       }
@@ -627,6 +643,7 @@ const MiniGame = () => {
   const handleTouchEnd = (e) => {
     if (e.target.tagName === 'CANVAS') {
       e.preventDefault();
+      e.stopPropagation();
       setIsTouching(false);
     }
   };
