@@ -374,7 +374,7 @@ const MiniGame = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
   const [isTouching, setIsTouching] = useState(false);
-  const touchAnimationRef = useRef(null);
+  const animationRef = useRef(null);
 
   const dinoSources = [dino0, dino1, dino2, dino3, dino4, dino5, dino6, dino7, dino8, dino9, dino10, dino11];
   const legoSources = [lego0, lego1, lego2, lego3];
@@ -636,6 +636,7 @@ const MiniGame = () => {
     }
     e.preventDefault();
     e.stopPropagation();
+    setIsTouching(true);
     handleJump();
   };
 
@@ -646,7 +647,6 @@ const MiniGame = () => {
     }
     e.preventDefault();
     e.stopPropagation();
-    handleJump();
   };
 
   const handleTouchEnd = (e) => {
@@ -656,6 +656,7 @@ const MiniGame = () => {
     }
     e.preventDefault();
     e.stopPropagation();
+    setIsTouching(false);
   };
 
   useEffect(() => {
@@ -663,22 +664,20 @@ const MiniGame = () => {
   }, []);
 
   useEffect(() => {
-    let animationFrameId;
-    
     const animateJump = () => {
       if (isTouching) {
         handleJump();
       }
-      animationFrameId = requestAnimationFrame(animateJump);
+      animationRef.current = requestAnimationFrame(animateJump);
     };
 
     if (isTouching) {
-      animationFrameId = requestAnimationFrame(animateJump);
+      animationRef.current = requestAnimationFrame(animateJump);
     }
 
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
       }
     };
   }, [isTouching]);
