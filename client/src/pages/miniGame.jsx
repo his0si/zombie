@@ -630,18 +630,30 @@ const MiniGame = () => {
   };
 
   const handleTouchStart = (e) => {
+    // 모달이나 버튼을 터치한 경우 이벤트 전파 중지
+    if (e.target.closest('.auth-modal') || e.target.closest('button')) {
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     handleJump();
   };
 
   const handleTouchMove = (e) => {
+    // 모달이나 버튼을 터치한 경우 이벤트 전파 중지
+    if (e.target.closest('.auth-modal') || e.target.closest('button')) {
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     handleJump();
   };
 
   const handleTouchEnd = (e) => {
+    // 모달이나 버튼을 터치한 경우 이벤트 전파 중지
+    if (e.target.closest('.auth-modal') || e.target.closest('button')) {
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
   };
