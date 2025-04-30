@@ -374,6 +374,7 @@ const MiniGame = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
   const [isTouching, setIsTouching] = useState(false);
+  const touchAnimationRef = useRef(null);
 
   const dinoSources = [dino0, dino1, dino2, dino3, dino4, dino5, dino6, dino7, dino8, dino9, dino10, dino11];
   const legoSources = [lego0, lego1, lego2, lego3];
@@ -634,6 +635,15 @@ const MiniGame = () => {
       e.stopPropagation();
       setIsTouching(true);
       handleJump();
+      
+      const animateJump = () => {
+        if (isTouching) {
+          handleJump();
+          touchAnimationRef.current = requestAnimationFrame(animateJump);
+        }
+      };
+      
+      touchAnimationRef.current = requestAnimationFrame(animateJump);
     }
   };
 
@@ -641,9 +651,6 @@ const MiniGame = () => {
     if (e.target.tagName === 'CANVAS') {
       e.preventDefault();
       e.stopPropagation();
-      if (isTouching) {
-        handleJump();
-      }
     }
   };
 
@@ -652,11 +659,20 @@ const MiniGame = () => {
       e.preventDefault();
       e.stopPropagation();
       setIsTouching(false);
+      if (touchAnimationRef.current) {
+        cancelAnimationFrame(touchAnimationRef.current);
+        touchAnimationRef.current = null;
+      }
     }
   };
 
   useEffect(() => {
     initGame();
+    return () => {
+      if (touchAnimationRef.current) {
+        cancelAnimationFrame(touchAnimationRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
