@@ -12,7 +12,6 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  pointer-events: none;
 `;
 
 const ModalContent = styled.div`
@@ -23,7 +22,6 @@ const ModalContent = styled.div`
   width: 90%;
   max-width: 400px;
   color: #4eff4e;
-  pointer-events: auto;
 `;
 
 const Title = styled.h2`

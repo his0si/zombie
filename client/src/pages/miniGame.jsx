@@ -610,6 +610,15 @@ const MiniGame = () => {
     handleJump();
   };
 
+  const handleTouchMove = (e) => {
+    e.preventDefault();
+    handleJump();
+  };
+
+  const handleTouchEnd = (e) => {
+    e.preventDefault();
+  };
+
   useEffect(() => {
     initGame();
   }, []);
@@ -660,7 +669,8 @@ const MiniGame = () => {
     <GameContainer 
       onClick={handleJump}
       onTouchStart={handleTouchStart}
-      onTouchMove={(e) => e.stopPropagation()}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       style={{ margin: 0, padding: 0 }}
     >
       <LeaderboardButton onClick={(e) => {
