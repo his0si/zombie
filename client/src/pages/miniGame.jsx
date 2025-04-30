@@ -352,7 +352,7 @@ const MiniGame = () => {
   const [showAuthModal, setShowAuthModal] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
-  const [touchInterval, setTouchInterval] = useState(null);
+  const [isTouching, setIsTouching] = useState(false);
 
   const dinoSources = [dino0, dino1, dino2, dino3, dino4, dino5, dino6, dino7, dino8, dino9, dino10, dino11];
   const legoSources = [lego0, lego1, lego2, lego3];
@@ -609,39 +609,30 @@ const MiniGame = () => {
 
   const handleTouchStart = (e) => {
     if (e.target.tagName === 'CANVAS') {
+      e.preventDefault();
+      setIsTouching(true);
       handleJump();
-      // 100ms 간격으로 점프 실행
-      const interval = setInterval(() => {
-        handleJump();
-      }, 100);
-      setTouchInterval(interval);
     }
   };
 
   const handleTouchMove = (e) => {
     if (e.target.tagName === 'CANVAS') {
       e.preventDefault();
+      if (isTouching) {
+        handleJump();
+      }
     }
   };
 
   const handleTouchEnd = (e) => {
     if (e.target.tagName === 'CANVAS') {
       e.preventDefault();
-      if (touchInterval) {
-        clearInterval(touchInterval);
-        setTouchInterval(null);
-      }
+      setIsTouching(false);
     }
   };
 
   useEffect(() => {
     initGame();
-    // 컴포넌트 언마운트 시 인터벌 정리
-    return () => {
-      if (touchInterval) {
-        clearInterval(touchInterval);
-      }
-    };
   }, []);
 
   useEffect(() => {
