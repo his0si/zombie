@@ -635,15 +635,6 @@ const MiniGame = () => {
       e.stopPropagation();
       setIsTouching(true);
       handleJump();
-      
-      const animateJump = () => {
-        if (isTouching) {
-          handleJump();
-          touchAnimationRef.current = requestAnimationFrame(animateJump);
-        }
-      };
-      
-      touchAnimationRef.current = requestAnimationFrame(animateJump);
     }
   };
 
@@ -659,21 +650,33 @@ const MiniGame = () => {
       e.preventDefault();
       e.stopPropagation();
       setIsTouching(false);
-      if (touchAnimationRef.current) {
-        cancelAnimationFrame(touchAnimationRef.current);
-        touchAnimationRef.current = null;
-      }
     }
   };
 
   useEffect(() => {
     initGame();
+  }, []);
+
+  useEffect(() => {
+    let animationFrameId;
+    
+    const animateJump = () => {
+      if (isTouching) {
+        handleJump();
+      }
+      animationFrameId = requestAnimationFrame(animateJump);
+    };
+
+    if (isTouching) {
+      animationFrameId = requestAnimationFrame(animateJump);
+    }
+
     return () => {
-      if (touchAnimationRef.current) {
-        cancelAnimationFrame(touchAnimationRef.current);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
       }
     };
-  }, []);
+  }, [isTouching]);
 
   useEffect(() => {
     if (gameStarted && !gameOver && imagesLoaded) {
