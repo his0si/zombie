@@ -607,16 +607,22 @@ const MiniGame = () => {
   };
 
   const handleTouchStart = (e) => {
-    handleJump();
+    if (e.target.tagName === 'CANVAS') {
+      handleJump();
+    }
   };
 
   const handleTouchMove = (e) => {
-    e.preventDefault();
-    handleJump();
+    if (e.target.tagName === 'CANVAS') {
+      e.preventDefault();
+      handleJump();
+    }
   };
 
   const handleTouchEnd = (e) => {
-    e.preventDefault();
+    if (e.target.tagName === 'CANVAS') {
+      e.preventDefault();
+    }
   };
 
   useEffect(() => {
@@ -668,9 +674,6 @@ const MiniGame = () => {
   return (
     <GameContainer 
       onClick={handleJump}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
       style={{ margin: 0, padding: 0 }}
     >
       <LeaderboardButton onClick={(e) => {
@@ -686,6 +689,9 @@ const MiniGame = () => {
           ref={canvasRef}
           width={800}
           height={300}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         />
       </GameBoxWrapper>
       <GameOver show={gameOver}>
