@@ -589,6 +589,7 @@ const MiniGame = () => {
   };
 
   const handleRestart = (e) => {
+    e.preventDefault();
     e.stopPropagation();
     setScore(0);
     setGameOver(false);
@@ -630,7 +631,7 @@ const MiniGame = () => {
   };
 
   const handleTouchStart = (e) => {
-    if (showAuthModal) return;
+    if (showAuthModal || e.target.closest('button')) return;
     e.preventDefault();
     e.stopPropagation();
     setIsTouching(true);
@@ -638,13 +639,13 @@ const MiniGame = () => {
   };
 
   const handleTouchMove = (e) => {
-    if (showAuthModal) return;
+    if (showAuthModal || e.target.closest('button')) return;
     e.preventDefault();
     e.stopPropagation();
   };
 
   const handleTouchEnd = (e) => {
-    if (showAuthModal) return;
+    if (showAuthModal || e.target.closest('button')) return;
     e.preventDefault();
     e.stopPropagation();
     setIsTouching(false);
@@ -723,10 +724,13 @@ const MiniGame = () => {
       onTouchEnd={handleTouchEnd}
       style={{ margin: 0, padding: 0 }}
     >
-      <LeaderboardButton onClick={(e) => {
-        e.stopPropagation();
-        navigate('/leaderboard');
-      }}>
+      <LeaderboardButton 
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          navigate('/leaderboard');
+        }}
+      >
         Leaderboard 🏆
       </LeaderboardButton>
       <ScoreDisplay>Score: {score}</ScoreDisplay>
