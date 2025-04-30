@@ -212,6 +212,13 @@ const LeaderboardButton = styled.button`
   font-size: 16px;
   transition: all 0.3s ease;
   z-index: 2;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
   
   &:hover {
     background-color: #4eff4e;
