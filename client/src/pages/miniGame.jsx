@@ -351,7 +351,6 @@ const MiniGame = () => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-  const touchIntervalRef = useRef(null);
   const navigate = useNavigate();
 
   const dinoSources = [dino0, dino1, dino2, dino3, dino4, dino5, dino6, dino7, dino8, dino9, dino10, dino11];
@@ -608,23 +607,7 @@ const MiniGame = () => {
   };
 
   const handleTouchStart = (e) => {
-    e.preventDefault();
     handleJump();
-    // 터치 시작시 인터벌 설정
-    touchIntervalRef.current = setInterval(() => {
-      if (gameStarted && !gameOver) {
-        handleJump();
-      }
-    }, 100);
-  };
-
-  const handleTouchEnd = (e) => {
-    e.preventDefault();
-    // 터치 종료시 인터벌 제거
-    if (touchIntervalRef.current) {
-      clearInterval(touchIntervalRef.current);
-      touchIntervalRef.current = null;
-    }
   };
 
   useEffect(() => {
@@ -673,21 +656,11 @@ const MiniGame = () => {
     };
   }, []);
 
-  useEffect(() => {
-    return () => {
-      // 컴포넌트 언마운트시 인터벌 정리
-      if (touchIntervalRef.current) {
-        clearInterval(touchIntervalRef.current);
-      }
-    };
-  }, []);
-
   return (
     <GameContainer 
       onClick={handleJump}
       onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onTouchMove={(e) => e.preventDefault()}
+      onTouchMove={(e) => e.stopPropagation()}
       style={{ margin: 0, padding: 0 }}
     >
       <LeaderboardButton onClick={(e) => {
