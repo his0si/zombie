@@ -114,7 +114,7 @@ const ScoreDisplay = styled.div`
   -webkit-tap-highlight-color: transparent;
 `;
 
-const GameOver = styled.div`
+const GameOverModal = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -130,6 +130,7 @@ const GameOver = styled.div`
   text-shadow: 0 0 10px rgba(78, 255, 78, 0.5);
   border: 1px solid #4eff4e;
   box-shadow: 0 0 10px rgba(78, 255, 78, 0.3);
+  z-index: 1000;
 
   h2 {
     font-size: clamp(18px, 4vw, 24px);
@@ -141,7 +142,6 @@ const GameOver = styled.div`
     margin-bottom: 15px;
   }
 
-  // 모바일 세로 화면에서 더 작게
   @media (max-width: 480px) and (orientation: portrait) {
     width: 90%;
     max-width: 220px;
@@ -738,18 +738,12 @@ const MiniGame = () => {
           height={300}
         />
       </GameBoxWrapper>
-      <GameOver show={gameOver}>
-        <h2>Game Over!</h2>
-        <p>Final Score: {score}</p>
-        {!currentUser && (
-          <LoginNotice>
-            로그인하면 점수가 저장됩니다!
-          </LoginNotice>
-        )}
-        <RestartButton onClick={handleRestart}>
-          Restart
-        </RestartButton>
-      </GameOver>
+      <GameOver 
+        show={gameOver}
+        score={score}
+        currentUser={currentUser}
+        onRestart={handleRestart}
+      />
       {showAuthModal && (
         <AuthModal
           onClose={() => setShowAuthModal(false)}
@@ -757,6 +751,23 @@ const MiniGame = () => {
         />
       )}
     </GameContainer>
+  );
+};
+
+const GameOver = ({ show, score, currentUser, onRestart }) => {
+  return (
+    <GameOverModal show={show}>
+      <h2>Game Over!</h2>
+      <p>Final Score: {score}</p>
+      {!currentUser && (
+        <LoginNotice>
+          로그인하면 점수가 저장됩니다!
+        </LoginNotice>
+      )}
+      <RestartButton onClick={onRestart}>
+        Restart
+      </RestartButton>
+    </GameOverModal>
   );
 };
 
